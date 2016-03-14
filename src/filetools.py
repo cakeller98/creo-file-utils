@@ -1,27 +1,15 @@
 # -*- coding: iso-8859-15 -*-
-import glob
+import shutil
 import os
 import sqlite3
 import sys
 import time
 import pathlib
-import fnmatch
+
 
 patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
 
-
-def purge_files_folders():
-    root = r"D:\Temp"
-
-    for path, subdirs, files in os.walk(root):
-        for name in files:
-            for pattern in patterns:
-                if fnmatch.fnmatch(name, pattern):
-                    print(os.path.join(path, name))
-
-                    print(pathlib.PurePath(path, name))
-
-def purgefiles(folder, backup=True, keepversion=1):
+def purgefiles(folder, backup=True, keepversion=1,sub_folders=False):
     print("Purge files")
 
     con = sqlite3.connect(r'c:\temp\slask.db3')
@@ -38,18 +26,27 @@ def purgefiles(folder, backup=True, keepversion=1):
         cur.execute('create table files (filename varchar(100), name varchar(100),ext varchar(100),version bigint)')
         con.commit()
 
+
         for pattern in patterns:
             searchfor = r'{0}\{1}'.format(folder, pattern)
 
-            print(searchfor)
+            print("Sök: "+searchfor)
 
-            files = glob.glob(searchfor)
+            if sub_folders:
+                files = pathlib.Path(folder).glob('**/{0}'.format(pattern))
+            else:
+                files=pathlib.Path(folder).glob(pattern)
 
             for file in files:
-                strtmp = file.split('.')
+                p=pathlib.WindowsPath(file)
+                print(file)
+                print(p.parent)
+                print(file.name)
+                strtmp = file.name.split('.')
+                print(strtmp)
 
                 if strtmp[2].isdigit():
-                    parameters = (os.path.basename(file), os.path.basename(strtmp[0]), strtmp[1], strtmp[2])
+                    parameters = (str(file), strtmp[0]+strtmp[1], strtmp[1], strtmp[2])
                     cur.execute(insertstmt, parameters)
 
         con.commit()
@@ -69,11 +66,21 @@ def purgefiles(folder, backup=True, keepversion=1):
             rows02 = cur1.fetchall()
 
             for row02 in rows02:
-                deletefile = r'{0}\{1}'.format(folder, row02[0])
+                deletefile = row02[0]
+
+                dir_str=os.path.dirname(deletefile)
+
+                if backup:
+                    os.makedirs(r'{0}\Backup'.format(dir_str),exist_ok=True)
 
                 try:
-                    print(deletefile)
-                    # os.remove(deletefile)
+                    print('Deleting: '+deletefile)
+
+                    if backup:
+                        shutil.move(deletefile,r'{0}\Backup'.format(dir_str))
+                    else:
+                        print(deletefile)
+                        # os.remove(deletefile)
                 except Exception as e:
                     print(str(e))
 
@@ -83,7 +90,7 @@ def main(argv):
 
     starttime = time.time()
 
-    purgefiles(folder)
+    purgefiles(folder,sub_folders=True)
 
     endtime = time.time()
     totaltime = (str(endtime - starttime))[:6]
