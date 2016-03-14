@@ -4,12 +4,25 @@ import os
 import sqlite3
 import sys
 import time
+import pathlib
+import fnmatch
 
+patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
+
+
+def purge_files_folders():
+    root = r"D:\Temp"
+
+    for path, subdirs, files in os.walk(root):
+        for name in files:
+            for pattern in patterns:
+                if fnmatch.fnmatch(name, pattern):
+                    print(os.path.join(path, name))
+
+                    print(pathlib.PurePath(path, name))
 
 def purgefiles(folder, backup=True, keepversion=1):
     print("Purge files")
-
-    patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
 
     con = sqlite3.connect(r'c:\temp\slask.db3')
     # con = sqlite3.connect(':memory:')
