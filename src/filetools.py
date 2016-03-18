@@ -9,7 +9,49 @@ import pathlib
 
 patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
 
-def purgefiles(folder, backup=True, keepversion=1,sub_folders=False):
+def rename_files(folder,sub_folders=False):
+    print("Rename files")
+
+    con = sqlite3.connect(r'c:\temp\slask.db3')
+
+
+    insertstmt = 'INSERT INTO files VALUES (?,?,?,?)'
+    selectstmt_01 = 'select name, ext, version from files group by name,ext'
+    selectstmt_02 = 'select * from files where name=? and ext=? and version<=?'
+
+
+    with con:
+        cur = con.cursor()
+
+        cur.execute("DROP TABLE IF EXISTS files")
+        cur.execute('create table files (filename varchar(100), name varchar(100),ext varchar(100),version bigint)')
+        con.commit()
+
+        for pattern in patterns:
+            searchfor = r'{0}\{1}'.format(folder, pattern)
+
+            print("Sök: " + searchfor)
+
+            if sub_folders:
+                files = pathlib.Path(folder).glob('**/{0}'.format(pattern))
+            else:
+                files = pathlib.Path(folder).glob(pattern)
+
+            for file in files:
+                p = pathlib.WindowsPath(file)
+                print(file)
+                print(p.parent)
+                print(file.name)
+                strtmp = file.name.split('.')
+                print(strtmp)
+
+                if strtmp[2].isdigit():
+                    parameters = (str(file), strtmp[0] + strtmp[1], strtmp[1], strtmp[2])
+                    cur.execute(insertstmt, parameters)
+
+        con.commit()
+
+def purge_files(folder, backup=True, keepversion=1, sub_folders=False):
     print("Purge files")
 
     con = sqlite3.connect(r'c:\temp\slask.db3')
@@ -90,7 +132,7 @@ def main(argv):
 
     starttime = time.time()
 
-    purgefiles(folder,sub_folders=True)
+    purge_files(folder, sub_folders=True)
 
     endtime = time.time()
     totaltime = (str(endtime - starttime))[:6]
