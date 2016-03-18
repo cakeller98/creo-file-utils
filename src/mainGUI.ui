@@ -71,7 +71,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_4">
+              <widget class="QCheckBox" name="cb_sub_folders">
                <property name="text">
                 <string>Include subfolders</string>
                </property>
@@ -106,7 +106,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_2">
+              <widget class="QSpinBox" name="spin_keep">
                <property name="prefix">
                 <string/>
                </property>
@@ -137,14 +137,14 @@
             </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_6">
+            <widget class="QCheckBox" name="cb_rename_from_one">
              <property name="text">
               <string>Rename from 1</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_5">
+            <widget class="QCheckBox" name="cb_remove_version">
              <property name="text">
               <string>Remove version</string>
              </property>
@@ -212,7 +212,11 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QPlainTextEdit" name="plainTextEdit"/>
+        <widget class="QTextEdit" name="txtOutput">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
