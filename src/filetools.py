@@ -1,4 +1,11 @@
+#!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
+
+"""filetools.py: Description of what filetools does.
+
+Testing
+"""
+
 import shutil
 import os
 import sqlite3
@@ -6,6 +13,13 @@ import sys
 import time
 import pathlib
 
+__author__ = "Lars-Olof Levén"
+__copyright__ = "Copyright 2016, Lars-Olof Levén"
+__license__ = "The MIT License"
+__version__ = "1.0.0"
+__maintainer__ = "Lars-Olof Levén"
+__email__ = "lars-olof.leven@lwdot.se"
+__status__ = "Development"
 
 class creo_file_tool:
     def __init__(self, output):

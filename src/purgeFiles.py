@@ -1,4 +1,10 @@
+#!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
+
+"""purgeFiles.py: Description of what filetools does.
+
+Testing
+"""
 
 from PyQt5 import QtWidgets
 # from PyQt5.QtCore import *
@@ -6,6 +12,14 @@ from PyQt5.QtWidgets import *
 import sys
 import mainGUI
 import filetools
+
+__author__ = "Lars-Olof Levén"
+__copyright__ = "Copyright 2016, Lars-Olof Levén"
+__license__ = "The MIT License"
+__version__ = "1.0.0"
+__maintainer__ = "Lars-Olof Levén"
+__email__ = "lars-olof.leven@lwdot.se"
+__status__ = "Development"
 
 
 class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
