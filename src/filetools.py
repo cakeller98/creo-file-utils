@@ -31,22 +31,38 @@ class creo_file_tool:
         self.insertstmt = 'INSERT INTO files VALUES (?,?,?,?)'
         self.selectstmt_01 = 'select name, ext, version from files group by name,ext'
         self.selectstmt_02 = 'select * from files where name=? and ext=? and version<=?'
+        self.selectstmt_03 = 'select * from files grop by name, ext order by version'
 
 
-        self.drop_stmt = "DROP TABLE IF EXISTS files"
+        self.drop_stmt = 'DROP TABLE IF EXISTS files'
         self.create_stmt = 'create table files (filename varchar(100), name varchar(100),ext varchar(100),version bigint)'
 
-        for temp_str in self.temp_env:
-            if self.temp_folder is None and os.environ.get(temp_str) is not None:
-                self.temp_folder = os.environ.get(temp_str)
+        self.temp_folder=self.get_temp_folder()
 
         self.print_out=output
+
+        self.backup = True
+        self.keep_version = 1
+        self.rename_to_one = False
+        self.remove_number = False
+        self.folder=''
+        self.sub_folders=False
+
+    def get_temp_folder(self):
+
+        temp_str=''
+
+        for temp_item in self.temp_env:
+            if temp_str is None and os.environ.get(temp_item) is not None:
+                temp_str = os.environ.get(temp_item)
+
+        return temp_str
 
     def init_db(self):
         self.con = sqlite3.connect(r'c:\temp\slask.db3')
         # self.con = sqlite3.connect(':memory:')
 
-    def rename_files(self, folder, sub_folders=False):
+    def rename_files(self):
         print("Rename files")
 
         cur = self.con.cursor()
@@ -56,14 +72,14 @@ class creo_file_tool:
         self.con.commit()
 
         for pattern in self.patterns:
-            searchfor = r'{0}\{1}'.format(folder, pattern)
+            searchfor = r'{0}\{1}'.format(self.folder, pattern)
 
             print("Sök: " + searchfor)
 
-            if sub_folders:
-                files = pathlib.Path(folder).glob('**/{0}'.format(pattern))
+            if self.sub_folders:
+                files = pathlib.Path(self.folder).glob('**/{0}'.format(pattern))
             else:
-                files = pathlib.Path(folder).glob(pattern)
+                files = pathlib.Path(self.folder).glob(pattern)
 
             for file in files:
                 p = pathlib.WindowsPath(file)
@@ -79,7 +95,7 @@ class creo_file_tool:
 
         self.con.commit()
 
-    def purge_files(self, folder, backup=True, keepversion=1, sub_folders=False):
+    def purge_files(self):
         print("Purge files")
 
         cur = self.con.cursor()
@@ -89,14 +105,14 @@ class creo_file_tool:
         self.con.commit()
 
         for pattern in self.patterns:
-            searchfor = r'{0}\{1}'.format(folder, pattern)
+            searchfor = r'{0}\{1}'.format(self.folder, pattern)
 
             print("Sök: " + searchfor)
 
-            if sub_folders:
-                files = pathlib.Path(folder).glob('**/{0}'.format(pattern))
+            if self.sub_folders:
+                files = pathlib.Path(self.folder).glob('**/{0}'.format(pattern))
             else:
-                files = pathlib.Path(folder).glob(pattern)
+                files = pathlib.Path(self.folder).glob(pattern)
 
             for file in files:
                 p = pathlib.WindowsPath(file)
@@ -123,7 +139,7 @@ class creo_file_tool:
             print('{0} {1} {2}'.format(file, ext, version))
 
             cur1 = self.con.cursor()
-            cur1.execute(self.selectstmt_02, (file, ext, version - keepversion))
+            cur1.execute(self.selectstmt_02, (file, ext, version - self.keepversion))
             rows02 = cur1.fetchall()
 
             for row02 in rows02:
@@ -131,14 +147,14 @@ class creo_file_tool:
 
                 dir_str = os.path.dirname(deletefile)
 
-                if backup:
+                if self.backup:
                     os.makedirs(r'{0}\Backup'.format(dir_str), exist_ok=True)
 
                 try:
                     print('Deleting: ' + deletefile)
                     self.print_out.print_str('Deleting: ' + deletefile)
 
-                    if backup:
+                    if self.backup:
                         shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
                     else:
                         print(deletefile)
@@ -152,7 +168,7 @@ def main(argv):
 
     starttime = time.time()
 
-    purge_files(folder, sub_folders=True)
+    # purge_files(folder, sub_folders=True)
 
     endtime = time.time()
     totaltime = (str(endtime - starttime))[:6]
