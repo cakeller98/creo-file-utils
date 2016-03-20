@@ -21,6 +21,7 @@ __maintainer__ = "Lars-Olof Levén"
 __email__ = "lars-olof.leven@lwdot.se"
 __status__ = "Development"
 
+
 class creo_file_tool:
     def __init__(self, output):
         self.patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
@@ -33,24 +34,23 @@ class creo_file_tool:
         self.selectstmt_02 = 'select * from files where name=? and ext=? and version<=?'
         self.selectstmt_03 = 'select * from files grop by name, ext order by version'
 
-
         self.drop_stmt = 'DROP TABLE IF EXISTS files'
         self.create_stmt = 'create table files (filename varchar(100), name varchar(100),ext varchar(100),version bigint)'
 
-        self.temp_folder=self.get_temp_folder()
+        self.temp_folder = self.get_temp_folder()
 
-        self.print_out=output
+        self.print_out = output
 
         self.backup = True
         self.keep_version = 1
         self.rename_to_one = False
         self.remove_number = False
-        self.folder=''
-        self.sub_folders=False
+        self.folder = ''
+        self.sub_folders = False
 
     def get_temp_folder(self):
 
-        temp_str=''
+        temp_str = ''
 
         for temp_item in self.temp_env:
             if temp_str is None and os.environ.get(temp_item) is not None:
@@ -64,6 +64,9 @@ class creo_file_tool:
 
     def rename_files(self):
         print("Rename files")
+
+        rename_str = r'{0}\{1}.{2}.{3}'
+        rename_str_no_number = r'{0}\{1}.{2}'
 
         cur = self.con.cursor()
 
@@ -94,6 +97,43 @@ class creo_file_tool:
                     cur.execute(self.insertstmt, parameters)
 
         self.con.commit()
+
+        cur.execute(self.selectstmt_03)
+        rows = cur.fetchall()
+
+        temp_file_name = ''
+        temp_file_ext = ''
+        num_value = 1
+
+        for row in rows:
+            full_file_name = row[0]
+            file = row[1]
+            ext = row[2]
+            version = row[3]
+
+            if temp_file_name != file and temp_file_ext != ext:
+                temp_file_name = file
+                temp_file_ext = ext
+                num_value = 1
+
+            if self.rename_to_one:
+                dir_str = os.path.dirname(full_file_name)
+                print('---- Start rename ----')
+                print(full_file_name)
+                print(rename_str.format(dir_str, file, ext, num_value))
+                print('---- End rename ----')
+
+                # os.rename(full_file_name,rename_str.format(dir_str,file,ext,num_value))
+                num_value += 1
+
+            if self.remove_number:
+                dir_str = os.path.dirname(full_file_name)
+                print('---- Start remove num ----')
+                print(full_file_name)
+                print(rename_str_no_number.format(dir_str, file, ext, num_value))
+                print('---- End remove num ----')
+
+                # os.rename(full_file_name,                rename_str_no_number.format(dir_str,file,ext,num_value))
 
     def purge_files(self):
         print("Purge files")
