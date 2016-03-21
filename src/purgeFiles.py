@@ -12,6 +12,9 @@ from PyQt5.QtWidgets import *
 import sys
 import mainGUI
 import filetools
+import logging
+import datetime
+import os
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -21,6 +24,11 @@ __maintainer__ = "Lars-Olof Levén"
 __email__ = "lars-olof.leven@lwdot.se"
 __status__ = "Development"
 
+def initLogging(dateStr,logLevel):
+   scriptDir=os.path.dirname(os.path.abspath(__file__))
+   fmt='%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
+   filename =scriptDir+r'\log '+dateStr+'.log'
+   logging.basicConfig(level=logLevel,format=fmt,filename=filename,filemode='w')
 
 class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def __init__(self, parent=None):
@@ -55,6 +63,9 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
 
 def main(argv):
+    dateStr = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+    initLogging(dateStr, logging.DEBUG)
+
     app = QtWidgets.QApplication(sys.argv)
 
     form = ShowGui()

@@ -12,6 +12,7 @@ import sqlite3
 import sys
 import time
 import pathlib
+import logging
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -117,23 +118,34 @@ class creo_file_tool:
                 num_value = 1
 
             if self.rename_to_one:
-                dir_str = os.path.dirname(full_file_name)
-                print('---- Start rename ----')
-                print(full_file_name)
-                print(rename_str.format(dir_str, file, ext, num_value))
-                print('---- End rename ----')
+                try:
+                    dir_str = os.path.dirname(full_file_name)
+                    print('---- Start rename ----')
+                    print(full_file_name)
+                    print(rename_str.format(dir_str, file, ext, num_value))
+                    print('---- End rename ----')
 
-                # os.rename(full_file_name,rename_str.format(dir_str,file,ext,num_value))
-                num_value += 1
+                    # os.rename(full_file_name,rename_str.format(dir_str,file,ext,num_value))
+                    num_value += 1
+                except (IOError, OSError) as e:
+                    print(str(e))
+                    logging.error('Problem to rename file: ' + str(e))
+                except Exception as e:
+                    print(str(e))
 
             if self.remove_number:
-                dir_str = os.path.dirname(full_file_name)
-                print('---- Start remove num ----')
-                print(full_file_name)
-                print(rename_str_no_number.format(dir_str, file, ext, num_value))
-                print('---- End remove num ----')
+                try:
+                    dir_str = os.path.dirname(full_file_name)
+                    print('---- Start remove num ----')
+                    print(full_file_name)
+                    print(rename_str_no_number.format(dir_str, file, ext, num_value))
+                    print('---- End remove num ----')
 
-                # os.rename(full_file_name,                rename_str_no_number.format(dir_str,file,ext,num_value))
+                    # os.rename(full_file_name,                rename_str_no_number.format(dir_str,file,ext,num_value))
+                except (IOError, OSError) as e:
+                    print(str(e))
+                except Exception as e:
+                    print(str(e))
 
     def purge_files(self):
         print("Purge files")
@@ -187,21 +199,28 @@ class creo_file_tool:
 
                 dir_str = os.path.dirname(deletefile)
 
-                if self.backup:
-                    os.makedirs(r'{0}\Backup'.format(dir_str), exist_ok=True)
-
                 try:
-                    print('Deleting: ' + deletefile)
-                    self.print_out.print_str('Deleting: ' + deletefile)
-
                     if self.backup:
-                        shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
-                    else:
-                        print(deletefile)
-                        # os.remove(deletefile)
+                        os.makedirs(r'{0}\Backup'.format(dir_str), exist_ok=True)
+
+                    try:
+                        print('Deleting: ' + deletefile)
+                        self.print_out.print_str('Deleting: ' + deletefile)
+
+                        if self.backup:
+                            shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
+                        else:
+                            print(deletefile)
+                            # os.remove(deletefile)
+                    except (IOError, OSError) as e:
+                        print(str(e))
+                    except Exception as e:
+                        print(str(e))
+
+                except (IOError, OSError) as e:
+                    print(str(e))
                 except Exception as e:
                     print(str(e))
-
 
 def main(argv):
     folder = r'c:\work'
