@@ -208,7 +208,8 @@ class creo_file_tool:
                         self.print_out.print_str('Deleting: ' + deletefile)
 
                         if self.backup:
-                            shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
+                            # shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
+                            print('Backup file: ' + deletefile)
                         else:
                             print(deletefile)
                             # os.remove(deletefile)

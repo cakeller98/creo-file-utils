@@ -70,6 +70,8 @@ class Ui_frm_main(object):
         self.cb_rename_from_one.setObjectName("cb_rename_from_one")
         self.verticalLayout_2.addWidget(self.cb_rename_from_one)
         self.cb_remove_version = QtWidgets.QCheckBox(self.tab)
+        self.cb_remove_version.setEnabled(False)
+        self.cb_remove_version.setCheckable(True)
         self.cb_remove_version.setObjectName("cb_remove_version")
         self.verticalLayout_2.addWidget(self.cb_remove_version)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)

@@ -61,7 +61,7 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QCheckBox" name="cb_backup_2">
+              <widget class="QCheckBox" name="cb_backup">
                <property name="text">
                 <string>Backup</string>
                </property>
@@ -138,6 +138,9 @@
            </item>
            <item>
             <widget class="QCheckBox" name="cb_rename_from_one">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Rename from 1</string>
              </property>
@@ -145,8 +148,14 @@
            </item>
            <item>
             <widget class="QCheckBox" name="cb_remove_version">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Remove version</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

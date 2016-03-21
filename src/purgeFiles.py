@@ -43,6 +43,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
         self.btn_folder.clicked.connect(self.btn_click_folder)
         self.btn_purge.clicked.connect(self.btn_click_purge)
+        self.spin_keep.valueChanged[int].connect(self.spin_keep_version)
+        # self.spin_keep.valueChanged[str].connect(self.spin_keep_version)
         self.edt_folder.setText(self.workdir)
 
     def btn_click_folder(self):
@@ -59,7 +61,27 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def btn_click_purge(self):
         print('tttt')
 
-        filetools.purgefiles(self.workdir, self.cb_backup.isChecked())
+        creo_file_util=filetools.creo_file_tool(self)
+        creo_file_util.rename_to_one = self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()
+        creo_file_util.remove_number = self.cb_remove_version.isChecked() and self.cb_remove_version.isEnabled()
+        creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
+        creo_file_util.backup = self.cb_backup.isChecked()
+        creo_file_util.folder = self.workdir
+
+        creo_file_util.purge_files()
+
+        if creo_file_util.rename_to_one or creo_file_util.remove_number:
+            creo_file_util.rename_files()
+        # filetools.purgefiles(self.workdir, self.cb_backup.isChecked())
+
+    def spin_keep_version(self, new_value):
+        # slasl=self.spin_keep.value()
+        if new_value>1:
+            self.cb_rename_from_one.setEnabled(True)
+            self.cb_remove_version.setEnabled(False)
+        else:
+            self.cb_rename_from_one.setEnabled(False)
+            self.cb_remove_version.setEnabled(True)
 
 
 def main(argv):
