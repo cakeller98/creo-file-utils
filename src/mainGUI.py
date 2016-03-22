@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\lole\PycharmProjects\creo-file-utils\src\mainGUI.ui'
+# Form implementation generated from reading ui file 'D:\Development\PycharmProjects\creo-file-utils\src\mainGUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.4.1
 #
@@ -38,10 +38,10 @@ class Ui_frm_main(object):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-        self.cb_backup_2 = QtWidgets.QCheckBox(self.tab)
-        self.cb_backup_2.setChecked(True)
-        self.cb_backup_2.setObjectName("cb_backup_2")
-        self.verticalLayout.addWidget(self.cb_backup_2)
+        self.cb_backup = QtWidgets.QCheckBox(self.tab)
+        self.cb_backup.setChecked(True)
+        self.cb_backup.setObjectName("cb_backup")
+        self.verticalLayout.addWidget(self.cb_backup)
         self.cb_sub_folders = QtWidgets.QCheckBox(self.tab)
         self.cb_sub_folders.setObjectName("cb_sub_folders")
         self.verticalLayout.addWidget(self.cb_sub_folders)
@@ -67,10 +67,11 @@ class Ui_frm_main(object):
         self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.cb_rename_from_one = QtWidgets.QCheckBox(self.tab)
+        self.cb_rename_from_one.setEnabled(False)
         self.cb_rename_from_one.setObjectName("cb_rename_from_one")
         self.verticalLayout_2.addWidget(self.cb_rename_from_one)
         self.cb_remove_version = QtWidgets.QCheckBox(self.tab)
-        self.cb_remove_version.setEnabled(False)
+        self.cb_remove_version.setEnabled(True)
         self.cb_remove_version.setCheckable(True)
         self.cb_remove_version.setObjectName("cb_remove_version")
         self.verticalLayout_2.addWidget(self.cb_remove_version)
@@ -93,10 +94,13 @@ class Ui_frm_main(object):
         self.tab_2.setObjectName("tab_2")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.tab_2)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.txtOutput = QtWidgets.QTextEdit(self.tab_2)
-        self.txtOutput.setReadOnly(True)
-        self.txtOutput.setObjectName("txtOutput")
-        self.gridLayout_3.addWidget(self.txtOutput, 0, 0, 1, 1)
+        self.table_output = QtWidgets.QTableWidget(self.tab_2)
+        self.table_output.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.table_output.setColumnCount(0)
+        self.table_output.setObjectName("table_output")
+        self.table_output.setRowCount(0)
+        self.table_output.verticalHeader().setVisible(False)
+        self.gridLayout_3.addWidget(self.table_output, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_2, "")
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
@@ -108,7 +112,7 @@ class Ui_frm_main(object):
         _translate = QtCore.QCoreApplication.translate
         frm_main.setWindowTitle(_translate("frm_main", "Purge Creo Files"))
         self.btn_folder.setText(_translate("frm_main", "Folder"))
-        self.cb_backup_2.setText(_translate("frm_main", "Backup"))
+        self.cb_backup.setText(_translate("frm_main", "Backup"))
         self.cb_sub_folders.setText(_translate("frm_main", "Include subfolders"))
         self.label_2.setText(_translate("frm_main", "Version to keep"))
         self.cb_rename_from_one.setText(_translate("frm_main", "Rename from 1"))

@@ -6,13 +6,12 @@
 Testing
 """
 
-import shutil
+import logging
 import os
+import pathlib
 import sqlite3
 import sys
 import time
-import pathlib
-import logging
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -125,6 +124,8 @@ class creo_file_tool:
                     print(rename_str.format(dir_str, file, ext, num_value))
                     print('---- End rename ----')
 
+                    self.print_out.add_to_table('Rename', full_file_name,
+                                                rename_str.format(dir_str, file, ext, num_value))
                     # os.rename(full_file_name,rename_str.format(dir_str,file,ext,num_value))
                     num_value += 1
                 except (IOError, OSError) as e:
@@ -141,7 +142,9 @@ class creo_file_tool:
                     print(rename_str_no_number.format(dir_str, file, ext, num_value))
                     print('---- End remove num ----')
 
-                    # os.rename(full_file_name,                rename_str_no_number.format(dir_str,file,ext,num_value))
+                    self.print_out.add_to_table('Remove ext', full_file_name,
+                                                rename_str_no_number.format(dir_str, file, ext, num_value))
+                    # os.rename(full_file_name,rename_str_no_number.format(dir_str,file,ext,num_value))
                 except (IOError, OSError) as e:
                     print(str(e))
                 except Exception as e:
@@ -208,9 +211,12 @@ class creo_file_tool:
                         self.print_out.print_str('Deleting: ' + deletefile)
 
                         if self.backup:
+                            self.print_out.add_to_table('Move', deletefile, r'{0}\Backup'.format(dir_str))
+
                             # shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
                             print('Backup file: ' + deletefile)
                         else:
+                            self.print_out.add_to_table('Delete', deletefile)
                             print(deletefile)
                             # os.remove(deletefile)
                     except (IOError, OSError) as e:
@@ -222,6 +228,7 @@ class creo_file_tool:
                     print(str(e))
                 except Exception as e:
                     print(str(e))
+
 
 def main(argv):
     folder = r'c:\work'

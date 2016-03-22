@@ -47,6 +47,11 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         # self.spin_keep.valueChanged[str].connect(self.spin_keep_version)
         self.edt_folder.setText(self.workdir)
 
+        self.table_output.setColumnCount(3)
+        self.table_output.setRowCount(0)
+        self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
+
+
     def btn_click_folder(self):
         oldworkingdir = self.workdir
 
@@ -68,6 +73,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         creo_file_util.backup = self.cb_backup.isChecked()
         creo_file_util.folder = self.workdir
 
+        self.table_output.setRowCount(0)
+
         creo_file_util.purge_files()
 
         if creo_file_util.rename_to_one or creo_file_util.remove_number:
@@ -83,6 +90,18 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
             self.cb_rename_from_one.setEnabled(False)
             self.cb_remove_version.setEnabled(True)
 
+    def auto_size_table(self):
+        self.table_output.resizeColumnsToContents()
+        self.table_output.resizeRowsToContents()
+        self.table_output.horizontalHeader().setStretchLastSection(True)
+
+    def add_to_table(self,action_str,from_str, to_str=''):
+        currentRowCount = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(currentRowCount)
+        self.tableWidget.setItem(currentRowCount, 0, QtWidgets.QTableWidgetItem(action_str))
+        self.tableWidget.setItem(currentRowCount, 1, QtWidgets.QTableWidgetItem(from_str))
+        self.tableWidget.setItem(currentRowCount, 2, QtWidgets.QTableWidgetItem(to_str))
+        self.auto_size_table()
 
 def main(argv):
     dateStr = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
