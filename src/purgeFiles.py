@@ -26,8 +26,9 @@ __status__ = "Development"
 
 def initLogging(dateStr,logLevel):
    scriptDir=os.path.dirname(os.path.abspath(__file__))
+   os.makedirs(r'{0}\logs'.format(scriptDir), exist_ok=True)
    fmt='%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
-   filename =scriptDir+r'\log '+dateStr+'.log'
+   filename =r'{0}\logs\log {1}.log'.format(scriptDir, dateStr)
    logging.basicConfig(level=logLevel,format=fmt,filename=filename,filemode='w')
 
 class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
