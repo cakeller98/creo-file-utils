@@ -48,8 +48,22 @@ class creo_file_tool:
         self.remove_number = False
         self.folder = ''
         self.sub_folders = False
+        self.error = False
 
         self.init_db()
+
+    def logging_information(self, str_type, str_txt, str_message):
+        header = '---------------------------------'
+
+        print(header)
+        print(str_txt)
+        print(str_message)
+
+        if str_type.upper() == 'ERROR':
+            self.error = True
+            logging.error(header)
+            logging.error(str_txt)
+            logging.error(str_message)
 
     def get_temp_folder(self):
 
@@ -62,7 +76,7 @@ class creo_file_tool:
         return temp_str
 
     def init_db(self):
-        self.temp_folder=self.get_temp_folder()
+        self.temp_folder = self.get_temp_folder()
         self.con = sqlite3.connect(r'c:\temp\slask.db3')
         # self.con = sqlite3.connect(':memory:')
 
@@ -119,14 +133,12 @@ class creo_file_tool:
 
                     self.print_out.add_to_table('Rename', full_file_name,
                                                 rename_str.format(dir_str, file, ext, num_value))
-                    os.rename(full_file_name,rename_str.format(dir_str,file,ext,num_value))
+                    os.rename(full_file_name, rename_str.format(dir_str, file, ext, num_value))
                     num_value += 1
                 except (IOError, OSError) as e:
-                    print(str(e))
-                    logging.error('Problem to rename file: ' + str(e))
+                    self.logging_information('ERROR', 'Problem to rename file:', "Error {}".format(e.args[0]))
                 except Exception as e:
-                    print(str(e))
-                    logging.error('Problem to rename file: ' + str(e))
+                    self.logging_information('ERROR', 'Problem to rename file:', "Error {}".format(e.args[0]))
 
             if self.remove_number:
                 try:
@@ -135,11 +147,9 @@ class creo_file_tool:
                                                 rename_str_no_number.format(dir_str, file, ext, num_value))
                     os.rename(full_file_name, rename_str_no_number.format(dir_str, file, ext, num_value))
                 except (IOError, OSError) as e:
-                    print(str(e))
-                    logging.error('Problem to rename file: ' + str(e))
+                    self.logging_information('ERROR', 'Problem to rename file:', "Error {}".format(e.args[0]))
                 except Exception as e:
-                    print(str(e))
-                    logging.error('Problem to rename file: ' + str(e))
+                    self.logging_information('ERROR', 'Problem to rename file:', "Error {}".format(e.args[0]))
 
     def purge_files(self):
 
@@ -170,7 +180,7 @@ class creo_file_tool:
         rows = cur.fetchall()
 
         for row in rows:
-            folder=row[0]
+            folder = row[0]
             file = row[1]
             ext = row[2]
             version = row[3]
@@ -192,22 +202,17 @@ class creo_file_tool:
                         if self.backup:
                             self.print_out.add_to_table('Move', deletefile, r'{0}\Backup'.format(dir_str))
                             shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
-
                         else:
                             self.print_out.add_to_table('Delete', deletefile)
                             os.remove(deletefile)
                     except (IOError, OSError) as e:
-                        print(str(e))
-                        logging.error('Problem to delete file: ' + str(e))
+                        self.logging_information('ERROR', 'Problem to delete file:', "Error {}".format(e.args[0]))
                     except Exception as e:
-                        print(str(e))
-                        logging.error('Problem to delete file: ' + str(e))
+                        self.logging_information('ERROR', 'Problem to delete file:', "Error {}".format(e.args[0]))
                 except (IOError, OSError) as e:
-                    print(str(e))
-                    logging.error('Problem to create backuo folder: ' + str(e))
+                    self.logging_information('ERROR', 'Problem to create backup folder:', "Error {}".format(e.args[0]))
                 except Exception as e:
-                    print(str(e))
-                    logging.error('Problem to create backuo folder: ' + str(e))
+                    self.logging_information('ERROR', 'Problem to create backup folder:', "Error {}".format(e.args[0]))
 
 
 def main(argv):

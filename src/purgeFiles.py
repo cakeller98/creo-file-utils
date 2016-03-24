@@ -15,6 +15,7 @@ import filetools
 import logging
 import datetime
 import os
+import glob
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -24,12 +25,26 @@ __maintainer__ = "Lars-Olof Levén"
 __email__ = "lars-olof.leven@lwdot.se"
 __status__ = "Development"
 
-def initLogging(dateStr,logLevel):
-   scriptDir=os.path.dirname(os.path.abspath(__file__))
-   os.makedirs(r'{0}\logs'.format(scriptDir), exist_ok=True)
-   fmt='%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
-   filename =r'{0}\logs\log {1}.log'.format(scriptDir, dateStr)
-   logging.basicConfig(level=logLevel,format=fmt,filename=filename,filemode='w')
+
+def initLogging(dateStr, logLevel):
+    scriptDir = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(r'{0}\logs'.format(scriptDir), exist_ok=True)
+    fmt = '%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
+    filename = r'{0}\logs\log {1}.log'.format(scriptDir, dateStr)
+    logging.basicConfig(level=logLevel, format=fmt, filename=filename, filemode='w')
+
+
+def cleanLogFiles(self, keepLogFile=10):
+    fileList = sorted(glob.glob(r'{0}\logs\*.log'.format(self.cVars['scriptDir'])), key=os.path.getmtime, reverse=True)
+
+    for i in range(keepLogFile, len(fileList)):
+        try:
+            os.remove(fileList[i])
+        except (IOError, OSError) as e:
+            print("Error {}".format(e.args[0]))
+        except Exception as e:
+            print("Error {}".format(e.args[0]))
+
 
 class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def __init__(self, parent=None):
@@ -50,7 +65,6 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setRowCount(0)
         self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
 
-
     def btn_click_folder(self):
         oldworkingdir = self.workdir
 
@@ -63,28 +77,38 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.edt_folder.setText(self.workdir)
 
     def btn_click_purge(self):
-        creo_file_util=filetools.creo_file_tool(self)
+        creo_file_util = filetools.creo_file_tool(self)
         creo_file_util.rename_to_one = self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()
         creo_file_util.remove_number = self.cb_remove_version.isChecked() and self.cb_remove_version.isEnabled()
         creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
         creo_file_util.backup = self.cb_backup.isChecked()
         creo_file_util.folder = self.workdir
-        creo_file_util.keep_version=self.spin_keep.value()
+        creo_file_util.keep_version = self.spin_keep.value()
+
+        information_text = 'Rename finished!!!'
 
         self.table_output.setRowCount(0)
 
         QApplication.setOverrideCursor(Qt.WaitCursor)
-        creo_file_util.purge_files()
 
-        if creo_file_util.rename_to_one or creo_file_util.remove_number:
-            creo_file_util.rename_files()
+        try:
+            creo_file_util.purge_files()
 
-        QApplication.restoreOverrideCursor()
-        QMessageBox.information(self, 'Message', "Rename finished!!!", QMessageBox.Ok)
+            if creo_file_util.rename_to_one or creo_file_util.remove_number:
+                creo_file_util.rename_files()
+        except Exception as e:
+            raise e
+            creo_file_util.logging_information('ERROR', 'Problem to purge the files:', "Error {}".format(e.args[0]))
+        finally:
+            QApplication.restoreOverrideCursor()
 
+        if creo_file_util.error:
+            information_text = 'Problem to rename'
+
+        QMessageBox.information(self, 'Message', information_text, QMessageBox.Ok)
 
     def spin_keep_version(self, new_value):
-        if int(new_value)>1:
+        if int(new_value) > 1:
             self.cb_rename_from_one.setEnabled(True)
             self.cb_remove_version.setEnabled(False)
         else:
@@ -96,13 +120,14 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.resizeRowsToContents()
         self.table_output.horizontalHeader().setStretchLastSection(True)
 
-    def add_to_table(self,action_str,from_str, to_str=''):
+    def add_to_table(self, action_str, from_str, to_str=''):
         currentRowCount = self.table_output.rowCount()
         self.table_output.insertRow(currentRowCount)
         self.table_output.setItem(currentRowCount, 0, QtWidgets.QTableWidgetItem(action_str))
         self.table_output.setItem(currentRowCount, 1, QtWidgets.QTableWidgetItem(from_str))
         self.table_output.setItem(currentRowCount, 2, QtWidgets.QTableWidgetItem(to_str))
         self.auto_size_table()
+
 
 def main(argv):
     dateStr = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
