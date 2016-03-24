@@ -190,9 +190,10 @@ class creo_file_tool:
             rows02 = cur1.fetchall()
 
             for row02 in rows02:
-                deletefile = row02[0]
+                delete_file = row02[0]
 
-                dir_str = os.path.dirname(deletefile)
+                dir_str = os.path.dirname(delete_file)
+                file_name = os.path.basename(delete_file)
 
                 try:
                     if self.backup:
@@ -200,11 +201,16 @@ class creo_file_tool:
 
                     try:
                         if self.backup:
-                            self.print_out.add_to_table('Move', deletefile, r'{0}\Backup'.format(dir_str))
-                            shutil.move(deletefile, r'{0}\Backup'.format(dir_str))
+                            backup_dst = r'{0}\Backup'.format(dir_str)
+                            self.print_out.add_to_table('Move', delete_file, backup_dst)
+
+                            if os.path.exists(r'{0}\{1}'.format(backup_dst, file_name)):
+                                os.remove(r'{0}\{1}'.format(backup_dst, file_name))
+
+                            shutil.move(delete_file, backup_dst)
                         else:
-                            self.print_out.add_to_table('Delete', deletefile)
-                            os.remove(deletefile)
+                            self.print_out.add_to_table('Delete', delete_file)
+                            os.remove(delete_file)
                     except (IOError, OSError) as e:
                         self.logging_information('ERROR', 'Problem to delete file:', "Error {}".format(e.args[0]))
                     except Exception as e:
@@ -213,22 +219,3 @@ class creo_file_tool:
                     self.logging_information('ERROR', 'Problem to create backup folder:', "Error {}".format(e.args[0]))
                 except Exception as e:
                     self.logging_information('ERROR', 'Problem to create backup folder:', "Error {}".format(e.args[0]))
-
-
-def main(argv):
-    folder = r'c:\work'
-
-    starttime = time.time()
-
-    # purge_files(folder, sub_folders=True)
-
-    endtime = time.time()
-    totaltime = (str(endtime - starttime))[:6]
-
-    print(starttime)
-    print(endtime)
-    print(totaltime)
-
-
-if __name__ == "__main__":
-    main(sys.argv)
