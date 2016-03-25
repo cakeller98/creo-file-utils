@@ -16,6 +16,7 @@ import logging
 import datetime
 import os
 import glob
+import log_util
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -24,14 +25,6 @@ __version__ = "1.0.0"
 __maintainer__ = "Lars-Olof Levén"
 __email__ = "lars-olof.leven@lwdot.se"
 __status__ = "Development"
-
-
-def initLogging(dateStr, logLevel):
-    scriptDir = os.path.dirname(os.path.abspath(__file__))
-    os.makedirs(r'{0}\logs'.format(scriptDir), exist_ok=True)
-    fmt = '%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
-    filename = r'{0}\logs\log {1}.log'.format(scriptDir, dateStr)
-    logging.basicConfig(level=logLevel, format=fmt, filename=filename, filemode='w')
 
 
 def cleanLogFiles(self, keepLogFile=10):
@@ -51,6 +44,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         super(ShowGui, self).__init__(parent)
 
         self.workdir = r'C:\Users\lole\PycharmProjects\creo-file-utils\src\model'
+        self.module_name = os.path.basename(sys.argv[0])
 
         self.setupUi(self)
 
@@ -89,16 +83,17 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
         self.table_output.setRowCount(0)
 
-        QApplication.setOverrideCursor(Qt.WaitCursor)
-
         try:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
             creo_file_util.purge_files()
 
             if creo_file_util.rename_to_one or creo_file_util.remove_number:
                 creo_file_util.rename_files()
         except Exception as e:
             raise e
-            creo_file_util.logging_information('ERROR', 'Problem to purge the files:', "Error {}".format(e.args[0]))
+            line_no = sys.exc_info()[-1].tb_lineno
+            log_util.logging_information('ERROR', self.module_name, line_no, 'Problem to purge the files:',
+                                         "Error {}".format(e.args[0]))
         finally:
             QApplication.restoreOverrideCursor()
 
@@ -131,7 +126,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
 def main(argv):
     dateStr = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-    initLogging(dateStr, logging.DEBUG)
+    scriptDir = os.path.dirname(os.path.abspath(__file__))
+    log_util.initLogging(scriptDir, dateStr, logging.DEBUG)
 
     app = QtWidgets.QApplication(sys.argv)
 

@@ -8,9 +8,11 @@ Testing
 
 import logging
 import os
+import sys
 import pathlib
 import sqlite3
 import shutil
+import log_util
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -25,6 +27,8 @@ class creo_file_tool:
     def __init__(self, output):
         self.patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
         self.temp_env = ['TMPDIR', 'TEMP', 'TMP']
+
+        self.module_name = os.path.basename(sys.argv[0])
 
         self.temp_folder = None
 
@@ -125,10 +129,14 @@ class creo_file_tool:
                     num_value += 1
                 except (IOError, OSError) as e:
                     self.error = True
-                    logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to rename file:',
-                                                         "Error {}".format(e.args[0])))
+                    line_no = sys.exc_info()[-1].tb_lineno
+
+                    log_util.log_information('ERROR', self.module_name, line_no, 'Problem to rename file:',
+                                             "Error {}".format(e.args[0]))
+
                 except Exception as e:
                     self.error = True
+                    line_no = sys.exc_info()[-1].tb_lineno
                     logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to rename file:',
                                                          "Error {}".format(e.args[0])))
 
@@ -140,10 +148,12 @@ class creo_file_tool:
                     os.rename(full_file_name, rename_str_no_number.format(dir_str, file, ext, num_value))
                 except (IOError, OSError) as e:
                     self.error = True
+                    line_no = sys.exc_info()[-1].tb_lineno
                     logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to remove number:',
                                                          "Error {}".format(e.args[0])))
                 except Exception as e:
                     self.error = True
+                    line_no = sys.exc_info()[-1].tb_lineno
                     logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to remove number:',
                                                          "Error {}".format(e.args[0])))
 
@@ -209,17 +219,21 @@ class creo_file_tool:
                             os.remove(delete_file)
                     except (IOError, OSError) as e:
                         self.error = True
+                        line_no = sys.exc_info()[-1].tb_lineno
                         logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to delete file:',
                                                              "Error {}".format(e.args[0])))
                     except Exception as e:
                         self.error = True
+                        line_no = sys.exc_info()[-1].tb_lineno
                         logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to delete file:',
                                                              "Error {}".format(e.args[0])))
                 except (IOError, OSError) as e:
                     self.error = True
+                    line_no = sys.exc_info()[-1].tb_lineno
                     logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to create backup folder:',
                                                          "Error {}".format(e.args[0])))
                 except Exception as e:
                     self.error = True
+                    line_no = sys.exc_info()[-1].tb_lineno
                     logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to create backup folder:',
                                                          "Error {}".format(e.args[0])))
