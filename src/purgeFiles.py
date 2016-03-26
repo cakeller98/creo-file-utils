@@ -91,9 +91,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
                 creo_file_util.rename_files()
         except Exception as e:
             raise e
-            line_no = sys.exc_info()[-1].tb_lineno
-            log_util.logging_information('ERROR', self.module_name, line_no, 'Problem to purge the files:',
-                                         "Error {}".format(e.args[0]))
+            log_util.logging_information('ERROR', self.module_name, info_str='Problem to purge the files:',
+                                         message_str="Error {}".format(e.args[0]))
         finally:
             QApplication.restoreOverrideCursor()
 

@@ -12,6 +12,7 @@ import sys
 import pathlib
 import sqlite3
 import shutil
+import inspect
 import log_util
 
 __author__ = "Lars-Olof Levén"
@@ -55,6 +56,9 @@ class creo_file_tool:
         self.header = '---------------------------------'
 
         self.init_db()
+
+    def get_line_no(self):
+        return inspect.currentframe().f_back.f_lineno
 
     def get_temp_folder(self):
 
@@ -129,10 +133,8 @@ class creo_file_tool:
                     num_value += 1
                 except (IOError, OSError) as e:
                     self.error = True
-                    line_no = sys.exc_info()[-1].tb_lineno
-
-                    log_util.log_information('ERROR', self.module_name, line_no, 'Problem to rename file:',
-                                             "Error {}".format(e.args[0]))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to rename file:',
+                                             message_str="Error {}".format(e.args[0]))
 
                 except Exception as e:
                     self.error = True
@@ -164,6 +166,8 @@ class creo_file_tool:
         cur.execute(self.drop_stmt)
         cur.execute(self.create_stmt)
         self.con.commit()
+
+        log_util.log_information('INFO',self.module_name,info_str='Start of purge files')
 
         for pattern in self.patterns:
 
