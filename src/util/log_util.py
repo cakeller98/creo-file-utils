@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import traceback
+import glob
 
 
 def initLogging(scriptDir, dateStr, logLevel):
@@ -11,8 +12,20 @@ def initLogging(scriptDir, dateStr, logLevel):
     # fmt = '%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
 
     fmt = '%(asctime)s - %(message)s'
-    filename = r'{0}\logs\log {1}.log'.format(scriptDir, dateStr)
+    filename = r'{0}\logs\util {1}.util'.format(scriptDir, dateStr)
     logging.basicConfig(level=logLevel, format=fmt, filename=filename, filemode='w')
+
+def cleanLogFiles(self, keepLogFile=10):
+    fileList = sorted(glob.glob(r'{0}\logs\*.util'.format(self.cVars['scriptDir'])), key=os.path.getmtime,
+                      reverse=True)
+
+    for i in range(keepLogFile, len(fileList)):
+        try:
+            os.remove(fileList[i])
+        except (IOError, OSError) as e:
+            print("Error {}".format(e.args[0]))
+        except Exception as e:
+            print("Error {}".format(e.args[0]))
 
 
 def log_information(level, module_name, info_str, line_no=0, message_str=''):

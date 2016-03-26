@@ -16,7 +16,7 @@ import logging
 import datetime
 import os
 import glob
-import log_util
+from util import log_util
 
 __author__ = "Lars-Olof Levén"
 __copyright__ = "Copyright 2016, Lars-Olof Levén"
@@ -27,16 +27,7 @@ __email__ = "lars-olof.leven@lwdot.se"
 __status__ = "Development"
 
 
-def cleanLogFiles(self, keepLogFile=10):
-    fileList = sorted(glob.glob(r'{0}\logs\*.log'.format(self.cVars['scriptDir'])), key=os.path.getmtime, reverse=True)
 
-    for i in range(keepLogFile, len(fileList)):
-        try:
-            os.remove(fileList[i])
-        except (IOError, OSError) as e:
-            print("Error {}".format(e.args[0]))
-        except Exception as e:
-            print("Error {}".format(e.args[0]))
 
 
 class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
@@ -92,7 +83,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         except Exception as e:
             raise e
             log_util.logging_information('ERROR', self.module_name, info_str='Problem to purge the files:',
-                                         message_str="Error {}".format(e.args[0]))
+                                    message_str="Error {}".format(e.args[0]))
         finally:
             QApplication.restoreOverrideCursor()
 
@@ -134,6 +125,9 @@ def main(argv):
     form.update_ui()
     form.show()
     result = app.exec_()
+
+    log_util.cleanLogFiles()
+
 
 
 if __name__ == "__main__":
