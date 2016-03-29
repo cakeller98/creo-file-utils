@@ -34,7 +34,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def __init__(self, parent=None):
         super(ShowGui, self).__init__(parent)
 
-        self.workdir = r'C:\Users\lole\PycharmProjects\creo-file-utils\src\model'
+        self.workdir = os.path.dirname(os.path.abspath(__file__))
         self.module_name = os.path.basename(sys.argv[0])
 
         self.setupUi(self)
