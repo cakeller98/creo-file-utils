@@ -32,7 +32,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def __init__(self, parent=None):
         super(ShowGui, self).__init__(parent)
 
-        self.workdir = os.path.dirname(os.path.abspath(__file__))
+        self.model_dir = os.path.dirname(os.path.abspath(__file__))
         self.module_name = os.path.basename(sys.argv[0])
 
         self.setupUi(self)
@@ -42,22 +42,22 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.btn_purge.clicked.connect(self.btn_click_purge)
         self.spin_keep.valueChanged[int].connect(self.spin_keep_version)
         self.spin_keep.valueChanged[str].connect(self.spin_keep_version)
-        self.edt_folder.setText(self.workdir)
+        self.edt_folder.setText(self.model_dir)
 
         self.table_output.setColumnCount(3)
         self.table_output.setRowCount(0)
         self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
 
     def btn_click_folder(self):
-        oldworkingdir = self.workdir
+        old_model_dir = self.model_dir
 
-        self.workdir = QFileDialog.getExistingDirectory(self, 'Select a folder', oldworkingdir,
-                                                        QFileDialog.ShowDirsOnly)
+        self.model_dir = QFileDialog.getExistingDirectory(self, 'Select a folder', old_model_dir,
+                                                          QFileDialog.ShowDirsOnly)
 
-        if self.workdir == '' or self.workdir is None:
-            self.workdir = oldworkingdir
+        if self.model_dir == '' or self.model_dir is None:
+            self.model_dir = old_model_dir
 
-        self.edt_folder.setText(self.workdir)
+        self.edt_folder.setText(self.model_dir)
 
     def btn_click_purge(self):
         creo_file_util = filetools.CreoFileTool(self)
@@ -65,7 +65,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         creo_file_util.remove_number = self.cb_remove_version.isChecked() and self.cb_remove_version.isEnabled()
         creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
         creo_file_util.backup = self.cb_backup.isChecked()
-        creo_file_util.folder = self.workdir
+        creo_file_util.folder = self.model_dir
         creo_file_util.keep_version = self.spin_keep.value()
 
         information_text = 'Rename finished!!!'
