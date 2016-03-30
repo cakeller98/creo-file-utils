@@ -11,12 +11,12 @@ def initLogging(scriptDir, dateStr, logLevel):
     os.makedirs(r'{0}\logs'.format(scriptDir), exist_ok=True)
     # fmt = '%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
 
-    fmt = '%(asctime)s - %(message)s'
-    filename = r'{0}\logs\util {1}.util'.format(scriptDir, dateStr)
+    fmt = '%(asctime)s - %(levelname)s - %(message)s'
+    filename = r'{0}\logs\util {1}.log'.format(scriptDir, dateStr)
     logging.basicConfig(level=logLevel, format=fmt, filename=filename, filemode='w')
 
-def cleanLogFiles(self, keepLogFile=10):
-    fileList = sorted(glob.glob(r'{0}\logs\*.util'.format(self.cVars['scriptDir'])), key=os.path.getmtime,
+def cleanLogFiles(scriptDir, keepLogFile=10):
+    fileList = sorted(glob.glob(r'{0}\logs\*.log'.format(scriptDir)), key=os.path.getmtime,
                       reverse=True)
 
     for i in range(keepLogFile, len(fileList)):

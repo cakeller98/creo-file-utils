@@ -126,7 +126,7 @@ def main(argv):
     form.show()
     result = app.exec_()
 
-    log_util.cleanLogFiles()
+    log_util.cleanLogFiles(scriptDir)
 
 
 

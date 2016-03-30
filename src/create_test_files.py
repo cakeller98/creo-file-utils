@@ -16,4 +16,4 @@ for folder in folderList:
 
         for ext in range(1, x):
             with open(r'{0}\{1}.{2}'.format(folder, file, ext), 'w') as f:
-                f.write('{0}\n'.format(ext))
+                f.write(r'{0}\{1}.{2}'.format(folder, file, ext))

@@ -6,13 +6,13 @@
 Testing
 """
 
-import logging
-import os
-import sys
-import pathlib
-import sqlite3
-import shutil
 import inspect
+import os
+import pathlib
+import shutil
+import sqlite3
+import sys
+
 from util import log_util
 
 __author__ = "Lars-Olof Levén"
@@ -87,13 +87,19 @@ class creo_file_tool:
         cur.execute(self.create_stmt)
         self.con.commit()
 
+        log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Start of rename files')
+
         for pattern in self.patterns:
-            searchfor = r'{0}\{1}'.format(self.folder, pattern)
+            log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                     info_str='Search for {0}'.format(pattern))
 
             if self.sub_folders:
                 files = pathlib.Path(self.folder).glob('**/{0}'.format(pattern))
             else:
                 files = pathlib.Path(self.folder).glob(pattern)
+
+            log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                     info_str='Add founded files to db')
 
             for file in files:
                 p = pathlib.WindowsPath(file)
@@ -112,6 +118,8 @@ class creo_file_tool:
         temp_file_ext = ''
         num_value = 1
 
+        log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Get files to rename')
+
         for row in rows:
             full_file_name = row[0]
             file = row[2]
@@ -124,6 +132,7 @@ class creo_file_tool:
                 num_value = 1
 
             if self.rename_to_one:
+                log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Rename to {0}'.format(num_value))
                 try:
                     dir_str = os.path.dirname(full_file_name)
 
@@ -133,16 +142,17 @@ class creo_file_tool:
                     num_value += 1
                 except (IOError, OSError) as e:
                     self.error = True
-                    log_util.log_information('ERROR', self.module_name, info_str='Problem to rename file:',
-                                        message_str="Error {}".format(e.args[0]))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to rename file',
+                                             message_str="Error {}".format(e.args[0]))
 
                 except Exception as e:
                     self.error = True
-                    line_no = sys.exc_info()[-1].tb_lineno
-                    logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to rename file:',
-                                                         "Error {}".format(e.args[0])))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to rename file',
+                                             message_str="Error {}".format(e.args[0]))
 
             if self.remove_number:
+                log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                         info_str='Remove version number')
                 try:
                     dir_str = os.path.dirname(full_file_name)
                     self.print_out.add_to_table('Remove ext', full_file_name,
@@ -150,14 +160,12 @@ class creo_file_tool:
                     os.rename(full_file_name, rename_str_no_number.format(dir_str, file, ext, num_value))
                 except (IOError, OSError) as e:
                     self.error = True
-                    line_no = sys.exc_info()[-1].tb_lineno
-                    logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to remove number:',
-                                                         "Error {}".format(e.args[0])))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to remove number',
+                                             message_str="Error {}".format(e.args[0]))
                 except Exception as e:
                     self.error = True
-                    line_no = sys.exc_info()[-1].tb_lineno
-                    logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to remove number:',
-                                                         "Error {}".format(e.args[0])))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to remove number',
+                                             message_str="Error {}".format(e.args[0]))
 
     def purge_files(self):
 
@@ -167,14 +175,19 @@ class creo_file_tool:
         cur.execute(self.create_stmt)
         self.con.commit()
 
-        log_util.log_information('INFO', self.module_name, info_str='Start of purge files')
+        log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Start of purge files')
 
         for pattern in self.patterns:
 
+            log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                     info_str='Search for {0}'.format(pattern))
             if self.sub_folders:
                 files = pathlib.Path(self.folder).glob('**/{0}'.format(pattern))
             else:
                 files = pathlib.Path(self.folder).glob(pattern)
+
+            log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                     info_str='Add founded files to db')
 
             for file in files:
                 strtmp = file.name.split('.')
@@ -189,6 +202,7 @@ class creo_file_tool:
         cur.execute(self.selectstmt_01)
         rows = cur.fetchall()
 
+        log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Get files to purge')
         for row in rows:
             folder = row[0]
             file = row[1]
@@ -207,6 +221,8 @@ class creo_file_tool:
 
                 try:
                     if self.backup:
+                        log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                                 info_str='Create backup folder: {0}'.format(dir_str))
                         os.makedirs(r'{0}\Backup'.format(dir_str), exist_ok=True)
 
                     try:
@@ -223,21 +239,18 @@ class creo_file_tool:
                             os.remove(delete_file)
                     except (IOError, OSError) as e:
                         self.error = True
-                        line_no = sys.exc_info()[-1].tb_lineno
-                        logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to delete file:',
-                                                             "Error {}".format(e.args[0])))
+                        log_util.log_information('ERROR', self.module_name, info_str='Problem to delete file',
+                                                 message_str="Error {}".format(e.args[0]))
+
                     except Exception as e:
                         self.error = True
-                        line_no = sys.exc_info()[-1].tb_lineno
-                        logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to delete file:',
-                                                             "Error {}".format(e.args[0])))
+                        log_util.log_information('ERROR', self.module_name, info_str='Problem to delete file',
+                                                 message_str="Error {}".format(e.args[0]))
                 except (IOError, OSError) as e:
                     self.error = True
-                    line_no = sys.exc_info()[-1].tb_lineno
-                    logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to create backup folder:',
-                                                         "Error {}".format(e.args[0])))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to create backup folder',
+                                             message_str="Error {}".format(e.args[0]))
                 except Exception as e:
                     self.error = True
-                    line_no = sys.exc_info()[-1].tb_lineno
-                    logging.error('{0}\n{1}\n{2}'.format(self.header, 'Problem to create backup folder:',
-                                                         "Error {}".format(e.args[0])))
+                    log_util.log_information('ERROR', self.module_name, info_str='Problem to create backup folder',
+                                             message_str="Error {}".format(e.args[0]))
