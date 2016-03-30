@@ -10,6 +10,7 @@ import datetime
 import logging
 import os
 import sys
+import configparser
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -32,7 +33,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def __init__(self, parent=None):
         super(ShowGui, self).__init__(parent)
 
-        self.model_dir = os.path.dirname(os.path.abspath(__file__))
+        self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+        self.model_dir = self.script_dir
         self.module_name = os.path.basename(sys.argv[0])
 
         self.setupUi(self)
@@ -48,8 +50,16 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setRowCount(0)
         self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
 
+        # self.read_ini_file()
+
     def closeEvent(self, event):
         # Write to ini file
+        # Write backup
+        # Write if remove version or rename to 1
+        # Write pos and size
+
+        position = self.pos()
+
         event.accept()
 
     def btn_click_folder(self):
@@ -102,7 +112,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
             self.rb_rename_to_one.setEnabled(False)
         else:
             self.cb_rename_from_one.setEnabled(False)
-            self.cb_remove_version.setEnabled(True)
+            self.rb_remove_version.setEnabled(True)
             self.rb_rename_to_one.setEnabled(True)
 
     def auto_size_table(self):
@@ -118,10 +128,47 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setItem(current_row_count, 2, QtWidgets.QTableWidgetItem(to_str))
         self.auto_size_table()
 
+    def save_ini_file(self, x, y):
+
+        config = configparser.ConfigParser()
+        config.read(self.script_dir + '\main.ini')
+
+        if not 'General' in config:
+            config['General'] = {}
+
+        if not 'Position' in config:
+            config['Position'] = {}
+
+        section = config['General']
+        section['waitTime'] = str(self.waitTime)
+
+        section = config['Position']
+        section['x'] = str(x)
+        section['y'] = str(y)
+
+        self.waitTime = section.getint('waitTime')
+
+        with open(self.script_dir + '\main.ini', "wt") as configfile:
+            config.write(configfile)
+
+    def read_ini_file(self):
+        config = configparser.ConfigParser()
+
+        if os.path.exists(self.script_dir + '\main.ini'):
+            config.read(self.script_dir + '\main.ini')
+
+            if 'General' in config:
+                section = config['General']
+                self.waitTime = section.getint('waitTime')
+
+            if 'Position' in config:
+                section = config['Position']
+                self.x = section.getint('x')
+                self.y = section.getint('y')
 
 def main():
     date_str = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     log_util.init_logging(script_dir, date_str, logging.DEBUG)
 
     app = QtWidgets.QApplication(sys.argv)
