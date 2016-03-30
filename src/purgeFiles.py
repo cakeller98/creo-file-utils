@@ -48,6 +48,10 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setRowCount(0)
         self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
 
+    def closeEvent(self, event):
+        # Write to ini file
+        event.accept()
+
     def btn_click_folder(self):
         old_model_dir = self.model_dir
 
@@ -61,8 +65,10 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
     def btn_click_purge(self):
         creo_file_util = filetools.CreoFileTool(self)
-        creo_file_util.rename_to_one = self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()
-        creo_file_util.remove_number = self.cb_remove_version.isChecked() and self.cb_remove_version.isEnabled()
+        creo_file_util.rename_to_one = (
+                                       self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()) or (
+                                       self.rb_rename_to_one.isChecked() and self.rb_rename_to_one.isEnabled())
+        creo_file_util.remove_number = self.rb_remove_version.isChecked() and self.rb_remove_version.isEnabled()
         creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
         creo_file_util.backup = self.cb_backup.isChecked()
         creo_file_util.folder = self.model_dir
@@ -92,10 +98,12 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def spin_keep_version(self, new_value):
         if int(new_value) > 1:
             self.cb_rename_from_one.setEnabled(True)
-            self.cb_remove_version.setEnabled(False)
+            self.rb_remove_version.setEnabled(False)
+            self.rb_rename_to_one.setEnabled(False)
         else:
             self.cb_rename_from_one.setEnabled(False)
             self.cb_remove_version.setEnabled(True)
+            self.rb_rename_to_one.setEnabled(True)
 
     def auto_size_table(self):
         self.table_output.resizeColumnsToContents()

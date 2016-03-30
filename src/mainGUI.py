@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Development\PycharmProjects\creo-file-utils\src\mainGUI.ui'
+# Form implementation generated from reading ui file 'C:\Users\lole\PycharmProjects\creo-file-utils\src\mainGUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.4.1
 #
@@ -70,11 +70,15 @@ class Ui_frm_main(object):
         self.cb_rename_from_one.setEnabled(False)
         self.cb_rename_from_one.setObjectName("cb_rename_from_one")
         self.verticalLayout_2.addWidget(self.cb_rename_from_one)
-        self.cb_remove_version = QtWidgets.QCheckBox(self.tab)
-        self.cb_remove_version.setEnabled(True)
-        self.cb_remove_version.setCheckable(True)
-        self.cb_remove_version.setObjectName("cb_remove_version")
-        self.verticalLayout_2.addWidget(self.cb_remove_version)
+        self.rb_rename_to_one = QtWidgets.QRadioButton(self.tab)
+        self.rb_rename_to_one.setChecked(True)
+        self.rb_rename_to_one.setObjectName("rb_rename_to_one")
+        self.verticalLayout_2.addWidget(self.rb_rename_to_one)
+        self.rb_remove_version = QtWidgets.QRadioButton(self.tab)
+        self.rb_remove_version.setEnabled(True)
+        self.rb_remove_version.setCheckable(True)
+        self.rb_remove_version.setObjectName("rb_remove_version")
+        self.verticalLayout_2.addWidget(self.rb_remove_version)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem2)
         self.horizontalLayout_4.addLayout(self.verticalLayout_2)
@@ -116,7 +120,8 @@ class Ui_frm_main(object):
         self.cb_sub_folders.setText(_translate("frm_main", "Include subfolders"))
         self.label_2.setText(_translate("frm_main", "Version to keep"))
         self.cb_rename_from_one.setText(_translate("frm_main", "Rename from 1"))
-        self.cb_remove_version.setText(_translate("frm_main", "Remove version"))
+        self.rb_rename_to_one.setText(_translate("frm_main", "Rename to 1"))
+        self.rb_remove_version.setText(_translate("frm_main", "Remove version"))
         self.btn_purge.setText(_translate("frm_main", "Purge"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("frm_main", "Main"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("frm_main", "Output"))
