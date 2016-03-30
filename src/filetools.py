@@ -65,7 +65,7 @@ class creo_file_tool:
         temp_str = ''
 
         for temp_item in self.temp_env:
-            if temp_str is None and os.environ.get(temp_item) is not None:
+            if temp_str=='' and os.environ.get(temp_item) is not None:
                 temp_str = os.environ.get(temp_item)
 
         return temp_str
@@ -73,7 +73,6 @@ class creo_file_tool:
     def init_db(self):
         self.temp_folder = self.get_temp_folder()
         self.con = sqlite3.connect(r'{0}\_purge_creo_files.db3'.format(self.temp_folder))
-        # self.con = sqlite3.connect(r'c:\temp\slask.db3')
         # self.con = sqlite3.connect(':memory:')
 
     def rename_files(self):
