@@ -24,7 +24,7 @@ __email__ = "lars-olof.leven@lwdot.se"
 __status__ = "Development"
 
 
-class creo_file_tool:
+class CreoFileTool:
     def __init__(self, output):
         self.patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
         self.temp_env = ['TMPDIR', 'TEMP', 'TMP']
@@ -39,7 +39,8 @@ class creo_file_tool:
         self.selectstmt_03 = 'select * from files where folder not like "%backup%" order by folder, name, ext, version'
 
         self.drop_stmt = 'DROP TABLE IF EXISTS files'
-        self.create_stmt = 'create table files (filename varchar(1024), folder varchat(1024), name varchar(1024),ext varchar(100),version bigint)'
+        self.create_stmt = 'create table files (filename varchar(1024), folder varchat(1024), name varchar(1024),' \
+                           'ext varchar(100),version bigint)'
 
         self.temp_folder = self.get_temp_folder()
 
@@ -55,7 +56,8 @@ class creo_file_tool:
 
         self.header = '---------------------------------'
 
-        self.init_db()
+        self.con = sqlite3.connect(r'{0}\_purge_creo_files.db3'.format(self.temp_folder))
+        # self.con = sqlite3.connect(':memory:')
 
     def get_line_no(self):
         return inspect.currentframe().f_back.f_lineno
@@ -65,15 +67,10 @@ class creo_file_tool:
         temp_str = ''
 
         for temp_item in self.temp_env:
-            if temp_str=='' and os.environ.get(temp_item) is not None:
+            if temp_str == '' and os.environ.get(temp_item) is not None:
                 temp_str = os.environ.get(temp_item)
 
         return temp_str
-
-    def init_db(self):
-        self.temp_folder = self.get_temp_folder()
-        self.con = sqlite3.connect(r'{0}\_purge_creo_files.db3'.format(self.temp_folder))
-        # self.con = sqlite3.connect(':memory:')
 
     def rename_files(self):
 
@@ -123,7 +120,6 @@ class creo_file_tool:
             full_file_name = row[0]
             file = row[2]
             ext = row[3]
-            version = row[4]
 
             if temp_file_name != file and temp_file_ext != ext:
                 temp_file_name = file
@@ -131,7 +127,8 @@ class creo_file_tool:
                 num_value = 1
 
             if self.rename_to_one:
-                log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Rename to {0}'.format(num_value))
+                log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
+                                         info_str='Rename to {0}'.format(num_value))
                 try:
                     dir_str = os.path.dirname(full_file_name)
 

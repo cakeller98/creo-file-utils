@@ -1,27 +1,27 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
+import glob
 import logging
 import os
 import sys
 import traceback
-import glob
 
 
-def initLogging(scriptDir, dateStr, logLevel):
-    os.makedirs(r'{0}\logs'.format(scriptDir), exist_ok=True)
+def init_logging(script_dir, date_str, log_level):
+    os.makedirs(r'{0}\logs'.format(script_dir), exist_ok=True)
     # fmt = '%(asctime)s - %(name)s - %(levelname)s - %(module)s : %(lineno)d - %(message)s'
 
     fmt = '%(asctime)s - %(levelname)s - %(message)s'
-    filename = r'{0}\logs\util {1}.log'.format(scriptDir, dateStr)
-    logging.basicConfig(level=logLevel, format=fmt, filename=filename, filemode='w')
+    file_name = r'{0}\logs\util {1}.log'.format(script_dir, date_str)
+    logging.basicConfig(level=log_level, format=fmt, filename=file_name, filemode='w')
 
-def cleanLogFiles(scriptDir, keepLogFile=10):
-    fileList = sorted(glob.glob(r'{0}\logs\*.log'.format(scriptDir)), key=os.path.getmtime,
-                      reverse=True)
 
-    for i in range(keepLogFile, len(fileList)):
+def clean_log_files(script_dir, keep_log_file=10):
+    file_list = sorted(glob.glob(r'{0}\logs\*.log'.format(script_dir)), key=os.path.getmtime, reverse=True)
+
+    for i in range(keep_log_file, len(file_list)):
         try:
-            os.remove(fileList[i])
+            os.remove(file_list[i])
         except (IOError, OSError) as e:
             print("Error {}".format(e.args[0]))
         except Exception as e:
@@ -30,7 +30,6 @@ def cleanLogFiles(scriptDir, keepLogFile=10):
 
 def log_information(level, module_name, info_str, line_no=0, message_str=''):
     header = '-' * 50
-
 
     if level.upper() == 'INFO':
         logging.info(header)
