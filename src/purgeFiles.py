@@ -36,8 +36,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
         self.x = 0
         self.y = 0
-        self.width = 0
-        self.height = 0
+        self.width = 484
+        self.height = 365
         self.backup = True
         self.rename_to_one = True
         self.remove_ext = False
@@ -68,9 +68,6 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.resize(QSize(self.width, self.height))
 
     def closeEvent(self, event):
-        # Write to ini file
-        # Write if remove version or rename to 1
-
         self.save_ini_file()
 
         event.accept()
