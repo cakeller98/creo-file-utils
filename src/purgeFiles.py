@@ -43,7 +43,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.remove_ext = False
 
         self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-        self.model_dir = self.script_dir
+        self.model_dir = os.getcwd()
         self.module_name = os.path.basename(sys.argv[0])
 
         self.setupUi(self)
