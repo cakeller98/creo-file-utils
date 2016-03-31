@@ -6,13 +6,14 @@
 Testing
 """
 
+import configparser
 import datetime
 import logging
 import os
 import sys
-import configparser
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSize
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
 
@@ -33,11 +34,20 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def __init__(self, parent=None):
         super(ShowGui, self).__init__(parent)
 
+        self.x = 0
+        self.y = 0
+        self.width = 0
+        self.height = 0
+        self.backup = True
+        self.rename_to_one = True
+        self.remove_ext = False
+
         self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.model_dir = self.script_dir
         self.module_name = os.path.basename(sys.argv[0])
 
         self.setupUi(self)
+        self.read_ini_file()
 
     def update_ui(self):
         self.btn_folder.clicked.connect(self.btn_click_folder)
@@ -50,15 +60,18 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setRowCount(0)
         self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
 
-        # self.read_ini_file()
+        self.cb_backup.setChecked(self.backup)
+        self.rb_rename_to_one.setChecked(self.rename_to_one)
+        self.rb_remove_version.setChecked(self.remove_ext)
+
+        self.move(self.x, self.y)
+        self.resize(QSize(self.width, self.height))
 
     def closeEvent(self, event):
         # Write to ini file
-        # Write backup
         # Write if remove version or rename to 1
-        # Write pos and size
 
-        position = self.pos()
+        self.save_ini_file()
 
         event.accept()
 
@@ -78,6 +91,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         creo_file_util.rename_to_one = (
                                        self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()) or (
                                        self.rb_rename_to_one.isChecked() and self.rb_rename_to_one.isEnabled())
+
         creo_file_util.remove_number = self.rb_remove_version.isChecked() and self.rb_remove_version.isEnabled()
         creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
         creo_file_util.backup = self.cb_backup.isChecked()
@@ -128,25 +142,34 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setItem(current_row_count, 2, QtWidgets.QTableWidgetItem(to_str))
         self.auto_size_table()
 
-    def save_ini_file(self, x, y):
+    def save_ini_file(self):
 
         config = configparser.ConfigParser()
-        config.read(self.script_dir + '\main.ini')
 
-        if not 'General' in config:
-            config['General'] = {}
+        if os.path.exists(self.script_dir + '\main.ini'):
+            config.read(self.script_dir + '\main.ini')
 
         if not 'Position' in config:
             config['Position'] = {}
 
-        section = config['General']
-        section['waitTime'] = str(self.waitTime)
+        if not 'Size' in config:
+            config['Size'] = {}
+
+        if not 'General' in config:
+            config['General'] = {}
 
         section = config['Position']
-        section['x'] = str(x)
-        section['y'] = str(y)
+        section['x'] = str(self.pos().x())
+        section['y'] = str(self.pos().y())
 
-        self.waitTime = section.getint('waitTime')
+        section = config['Size']
+        section['Width'] = str(self.size().width())
+        section['Height'] = str(self.size().height())
+
+        section = config['General']
+        section['Backup'] = str(self.cb_backup.isChecked())
+        section['Rename_num'] = str(self.rb_rename_to_one.isChecked())
+        section['Remove_num'] = str(self.rb_remove_version.isChecked())
 
         with open(self.script_dir + '\main.ini', "wt") as configfile:
             config.write(configfile)
@@ -157,14 +180,21 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         if os.path.exists(self.script_dir + '\main.ini'):
             config.read(self.script_dir + '\main.ini')
 
-            if 'General' in config:
-                section = config['General']
-                self.waitTime = section.getint('waitTime')
-
             if 'Position' in config:
                 section = config['Position']
                 self.x = section.getint('x')
                 self.y = section.getint('y')
+
+            if 'Size' in config:
+                section = config['Size']
+                self.width = section.getint('width')
+                self.height = section.getint('height')
+
+            if 'General' in config:
+                section = config['Size']
+                self.backup = config.getboolean('General', 'Backup')
+                self.remove_ext=config.getboolean('General', 'Remove_num')
+                self.rename_to_one = config.getboolean('General', 'Rename_num')
 
 def main():
     date_str = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
