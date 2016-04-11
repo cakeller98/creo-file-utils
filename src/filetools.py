@@ -50,6 +50,7 @@ class CreoFileTool:
         self.keep_version = 1
         self.rename_to_one = False
         self.remove_number = False
+        self.keep_number = False
         self.folder = ''
         self.sub_folders = False
         self.error = False
@@ -121,7 +122,7 @@ class CreoFileTool:
             file = row[2]
             ext = row[3]
 
-            if temp_file_name != file and temp_file_ext != ext:
+            if temp_file_name != file or temp_file_ext != ext:
                 temp_file_name = file
                 temp_file_ext = ext
                 num_value = 1

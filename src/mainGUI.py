@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\lole\PycharmProjects\creo-file-utils\src\mainGUI.ui'
+# Form implementation generated from reading ui file 'D:\Development\PycharmProjects\creo-file-utils\src\mainGUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.4.1
 #
@@ -70,8 +70,12 @@ class Ui_frm_main(object):
         self.cb_rename_from_one.setEnabled(False)
         self.cb_rename_from_one.setObjectName("cb_rename_from_one")
         self.verticalLayout_2.addWidget(self.cb_rename_from_one)
+        self.rb_keep_number = QtWidgets.QRadioButton(self.tab)
+        self.rb_keep_number.setChecked(True)
+        self.rb_keep_number.setObjectName("rb_keep_number")
+        self.verticalLayout_2.addWidget(self.rb_keep_number)
         self.rb_rename_to_one = QtWidgets.QRadioButton(self.tab)
-        self.rb_rename_to_one.setChecked(True)
+        self.rb_rename_to_one.setChecked(False)
         self.rb_rename_to_one.setObjectName("rb_rename_to_one")
         self.verticalLayout_2.addWidget(self.rb_rename_to_one)
         self.rb_remove_version = QtWidgets.QRadioButton(self.tab)
@@ -120,6 +124,7 @@ class Ui_frm_main(object):
         self.cb_sub_folders.setText(_translate("frm_main", "Include subfolders"))
         self.label_2.setText(_translate("frm_main", "Version to keep"))
         self.cb_rename_from_one.setText(_translate("frm_main", "Rename from 1"))
+        self.rb_keep_number.setText(_translate("frm_main", "Keep version number"))
         self.rb_rename_to_one.setText(_translate("frm_main", "Rename to 1"))
         self.rb_remove_version.setText(_translate("frm_main", "Remove version"))
         self.btn_purge.setText(_translate("frm_main", "Purge"))

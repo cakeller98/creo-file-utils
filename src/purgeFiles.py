@@ -39,7 +39,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.width = 484
         self.height = 365
         self.backup = True
-        self.rename_to_one = True
+        self.keep_number = True
+        self.rename_to_one = False
         self.remove_ext = False
 
         self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -61,11 +62,14 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.table_output.setHorizontalHeaderLabels(['Action', 'From', 'To'])
 
         self.cb_backup.setChecked(self.backup)
+        self.rb_keep_number.setChecked(self.keep_number)
         self.rb_rename_to_one.setChecked(self.rename_to_one)
         self.rb_remove_version.setChecked(self.remove_ext)
 
         self.move(self.x, self.y)
         self.resize(QSize(self.width, self.height))
+
+
 
     def closeEvent(self, event):
         self.save_ini_file()
@@ -90,6 +94,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
                                        self.rb_rename_to_one.isChecked() and self.rb_rename_to_one.isEnabled())
 
         creo_file_util.remove_number = self.rb_remove_version.isChecked() and self.rb_remove_version.isEnabled()
+        creo_file_util.remove_number = self.rb_keep_number.isChecked() and self.rb_keep_number.isEnabled()
         creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
         creo_file_util.backup = self.cb_backup.isChecked()
         creo_file_util.folder = self.model_dir
@@ -116,15 +121,18 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
         QMessageBox.information(self, 'Message', information_text, QMessageBox.Ok)
 
+
     def spin_keep_version(self, new_value):
         if int(new_value) > 1:
             self.cb_rename_from_one.setEnabled(True)
             self.rb_remove_version.setEnabled(False)
             self.rb_rename_to_one.setEnabled(False)
+            self.rb_keep_number.setEnabled(False)
         else:
             self.cb_rename_from_one.setEnabled(False)
             self.rb_remove_version.setEnabled(True)
             self.rb_rename_to_one.setEnabled(True)
+            self.rb_keep_number.setEnabled(True)
 
     def auto_size_table(self):
         self.table_output.resizeColumnsToContents()
@@ -167,6 +175,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         section['Backup'] = str(self.cb_backup.isChecked())
         section['Rename_num'] = str(self.rb_rename_to_one.isChecked())
         section['Remove_num'] = str(self.rb_remove_version.isChecked())
+        section['Keep_num'] = str(self.rb_keep_number.isChecked())
 
         with open(self.script_dir + '\main.ini', "wt") as configfile:
             config.write(configfile)
@@ -192,6 +201,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
                 self.backup = config.getboolean('General', 'Backup')
                 self.remove_ext=config.getboolean('General', 'Remove_num')
                 self.rename_to_one = config.getboolean('General', 'Rename_num')
+                self.keep_number = config.getboolean('General', 'Keep_num')
 
 def main():
     date_str = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
@@ -210,3 +220,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
