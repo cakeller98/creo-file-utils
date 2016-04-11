@@ -47,6 +47,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.model_dir = os.getcwd()
         self.module_name = os.path.basename(sys.argv[0])
 
+        se
+
         self.setupUi(self)
         self.read_ini_file()
 
@@ -68,8 +70,6 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
         self.move(self.x, self.y)
         self.resize(QSize(self.width, self.height))
-
-
 
     def closeEvent(self, event):
         self.save_ini_file()
