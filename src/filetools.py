@@ -172,6 +172,8 @@ class CreoFileTool:
         cur.execute(self.create_stmt)
         self.con.commit()
 
+        files=''
+
         log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Start of purge files')
 
         for pattern in self.patterns:

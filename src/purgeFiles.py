@@ -47,8 +47,6 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.model_dir = os.getcwd()
         self.module_name = os.path.basename(sys.argv[0])
 
-        se
-
         self.setupUi(self)
         self.read_ini_file()
 
@@ -90,11 +88,11 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
     def btn_click_purge(self):
         creo_file_util = filetools.CreoFileTool(self)
         creo_file_util.rename_to_one = (
-                                       self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()) or (
-                                       self.rb_rename_to_one.isChecked() and self.rb_rename_to_one.isEnabled())
+                                           self.cb_rename_from_one.isChecked() and self.cb_rename_from_one.isEnabled()) or (
+                                           self.rb_rename_to_one.isChecked() and self.rb_rename_to_one.isEnabled())
 
         creo_file_util.remove_number = self.rb_remove_version.isChecked() and self.rb_remove_version.isEnabled()
-        creo_file_util.remove_number = self.rb_keep_number.isChecked() and self.rb_keep_number.isEnabled()
+        creo_file_util.keep_number = self.rb_keep_number.isChecked() and self.rb_keep_number.isEnabled()
         creo_file_util.sub_folders = self.cb_sub_folders.isChecked()
         creo_file_util.backup = self.cb_backup.isChecked()
         creo_file_util.folder = self.model_dir
@@ -120,7 +118,6 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
             information_text = 'Problem to rename'
 
         QMessageBox.information(self, 'Message', information_text, QMessageBox.Ok)
-
 
     def spin_keep_version(self, new_value):
         if int(new_value) > 1:
@@ -197,11 +194,20 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
                 self.height = section.getint('height')
 
             if 'General' in config:
-                section = config['Size']
-                self.backup = config.getboolean('General', 'Backup')
-                self.remove_ext=config.getboolean('General', 'Remove_num')
-                self.rename_to_one = config.getboolean('General', 'Rename_num')
-                self.keep_number = config.getboolean('General', 'Keep_num')
+                section = config['General']
+
+                if 'backup' in section:
+                    self.backup = config.getboolean('General', 'backup')
+
+                if 'remove_num' in section:
+                    self.remove_ext = config.getboolean('General', 'remove_num')
+
+                if 'rename_num' in section:
+                    self.rename_to_one = config.getboolean('General', 'rename_num')
+
+                if 'keep_num' in section:
+                    self.keep_number = config.getboolean('General', 'keep_num')
+
 
 def main():
     date_str = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
@@ -220,4 +226,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
