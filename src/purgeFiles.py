@@ -151,13 +151,13 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         if os.path.exists(self.script_dir + '\main.ini'):
             config.read(self.script_dir + '\main.ini')
 
-        if not 'Position' in config:
+        if 'Position' not in config:
             config['Position'] = {}
 
-        if not 'Size' in config:
+        if 'Size' not in config:
             config['Size'] = {}
 
-        if not 'General' in config:
+        if 'General' not in config:
             config['General'] = {}
 
         section = config['Position']
