@@ -34,7 +34,7 @@ class CreoFileTool:
         self.temp_folder = None
 
         self.insertstmt = 'INSERT INTO files VALUES (?,?,?,?,?)'
-        self.selectstmt_01 = 'select folder, name, ext, version from files group by folder, name,ext'
+        self.selectstmt_01 = 'select folder, name, ext, version from files where folder not like "%backup%" group by folder, name,ext'
         self.selectstmt_02 = 'select * from files where folder=? and name=? and ext=? and version<=?'
         self.selectstmt_03 = 'select * from files where folder not like "%backup%" order by folder, name, ext, version'
 
@@ -59,6 +59,25 @@ class CreoFileTool:
 
         self.con = sqlite3.connect(r'{0}\_purge_creo_files.db3'.format(self.temp_folder))
         # self.con = sqlite3.connect(':memory:')
+
+    def get_backup_version(self, folder_str):
+        path_str = pathlib.WindowsPath(folder_str)
+
+        dirs = [f for f in path_str.iterdir() if f.is_dir()]
+        dirList = {}
+        latest = 0
+
+        for tmp_dir in dirs:
+            dirStr = str(tmp_dir)
+
+            if 'Backup' in dirStr:
+                dirList.update({dirStr: int(dirStr.replace('{0}\Backup'.format(folder_str), ''))})
+
+        if len(dirList) > 0:
+            listSorted = sorted(dirList, key=dirList.__getitem__, reverse=True)
+            latest = int(listSorted[0].replace('{0}\Backup'.format(folder_str), ''))
+
+        return '{0:04d}'.format(latest + 1)
 
     def get_line_no(self):
         return inspect.currentframe().f_back.f_lineno
@@ -172,7 +191,7 @@ class CreoFileTool:
         cur.execute(self.create_stmt)
         self.con.commit()
 
-        files=''
+        files = ''
 
         log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Start of purge files')
 
@@ -202,11 +221,18 @@ class CreoFileTool:
         rows = cur.fetchall()
 
         log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(), info_str='Get files to purge')
+
+        old_folder = ''
+
         for row in rows:
             folder = row[0]
             file = row[1]
             ext = row[2]
             version = row[3]
+
+            if old_folder!=folder:
+                backup_num = self.get_backup_version(r'{0}'.format(folder))
+                old_folder=folder
 
             cur1 = self.con.cursor()
             cur1.execute(self.selectstmt_02, (folder, file, ext, version - self.keep_version))
@@ -219,14 +245,16 @@ class CreoFileTool:
                 file_name = os.path.basename(delete_file)
 
                 try:
+
                     if self.backup:
                         log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
                                                  info_str='Create backup folder: {0}'.format(dir_str))
-                        os.makedirs(r'{0}\Backup'.format(dir_str), exist_ok=True)
+
+                        os.makedirs(r'{0}\Backup{1}'.format(dir_str, backup_num), exist_ok=True)
 
                     try:
                         if self.backup:
-                            backup_dst = r'{0}\Backup'.format(dir_str)
+                            backup_dst = r'{0}\Backup{1}'.format(dir_str, backup_num)
                             self.print_out.add_to_table('Move', delete_file, backup_dst)
 
                             if os.path.exists(r'{0}\{1}'.format(backup_dst, file_name)):
