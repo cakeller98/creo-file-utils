@@ -26,8 +26,10 @@ __status__ = "Development"
 
 class CreoFileTool:
     def __init__(self, output):
-        self.patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*']
+        # self.patterns = ['*.prt.*', '*.asm.*', '*.drw.*', '*.lay.*','*.frm.*']
         self.temp_env = ['TMPDIR', 'TEMP', 'TMP']
+        self.extension = ''
+        self.patterns = []
 
         self.module_name = os.path.basename(sys.argv[0])
 
@@ -59,6 +61,10 @@ class CreoFileTool:
 
         self.con = sqlite3.connect(r'{0}\_purge_creo_files.db3'.format(self.temp_folder))
         # self.con = sqlite3.connect(':memory:')
+
+    def create_patterns(self):
+        for ext in self.extension.split('.'):
+            self.patterns.append('*.{0}.*'.format(ext))
 
     def get_backup_version(self, folder_str):
         path_str = pathlib.WindowsPath(folder_str)
@@ -230,9 +236,9 @@ class CreoFileTool:
             ext = row[2]
             version = row[3]
 
-            if old_folder!=folder:
+            if old_folder != folder:
                 backup_num = self.get_backup_version(r'{0}'.format(folder))
-                old_folder=folder
+                old_folder = folder
 
             cur1 = self.con.cursor()
             cur1.execute(self.selectstmt_02, (folder, file, ext, version - self.keep_version))

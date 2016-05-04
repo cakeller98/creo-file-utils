@@ -42,6 +42,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.keep_number = True
         self.rename_to_one = False
         self.remove_ext = False
+        self.extension = 'prt.asm.drw.lay.frm'
 
         self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.model_dir = os.getcwd()
@@ -97,6 +98,8 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         creo_file_util.backup = self.cb_backup.isChecked()
         creo_file_util.folder = self.model_dir
         creo_file_util.keep_version = self.spin_keep.value()
+        creo_file_util.extension = self.extension
+        creo_file_util.create_patterns()
 
         information_text = 'Rename finished!!!'
 
@@ -173,6 +176,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         section['Rename_num'] = str(self.rb_rename_to_one.isChecked())
         section['Remove_num'] = str(self.rb_remove_version.isChecked())
         section['Keep_num'] = str(self.rb_keep_number.isChecked())
+        section['extension'] = self.extension
 
         with open(self.script_dir + '\main.ini', "wt") as configfile:
             config.write(configfile)
@@ -207,6 +211,9 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
                 if 'keep_num' in section:
                     self.keep_number = config.getboolean('General', 'keep_num')
+
+                if 'extension' in section:
+                    self.extension = config.get('General', 'extension')
 
 
 def main():
