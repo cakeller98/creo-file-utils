@@ -30,6 +30,7 @@ class CreoFileTool:
         self.temp_env = ['TMPDIR', 'TEMP', 'TMP']
         self.extension = ''
         self.patterns = []
+        self.backup_folder = 'Backup'
 
         self.module_name = os.path.basename(sys.argv[0])
 
@@ -76,12 +77,12 @@ class CreoFileTool:
         for tmp_dir in dirs:
             dirStr = str(tmp_dir)
 
-            if 'Backup' in dirStr:
-                dirList.update({dirStr: int(dirStr.replace('{0}\Backup'.format(folder_str), ''))})
+            if self.backup_folder in dirStr:
+                dirList.update({dirStr: int(dirStr.replace('{0}\{1}'.format(folder_str, self.backup_folder), ''))})
 
         if len(dirList) > 0:
             listSorted = sorted(dirList, key=dirList.__getitem__, reverse=True)
-            latest = int(listSorted[0].replace('{0}\Backup'.format(folder_str), ''))
+            latest = int(listSorted[0].replace('{0}\{1}'.format(folder_str, self.backup_folder), ''))
 
         return '{0:04d}'.format(latest + 1)
 
@@ -256,11 +257,11 @@ class CreoFileTool:
                         log_util.log_information('INFO', self.module_name, line_no=self.get_line_no(),
                                                  info_str='Create backup folder: {0}'.format(dir_str))
 
-                        os.makedirs(r'{0}\Backup{1}'.format(dir_str, backup_num), exist_ok=True)
+                        os.makedirs(r'{0}\{1}{2}'.format(dir_str, self.backup_folder, backup_num), exist_ok=True)
 
                     try:
                         if self.backup:
-                            backup_dst = r'{0}\Backup{1}'.format(dir_str, backup_num)
+                            backup_dst = r'{0}\{1}{2}'.format(dir_str, self.backup_folder, backup_num)
                             self.print_out.add_to_table('Move', delete_file, backup_dst)
 
                             if os.path.exists(r'{0}\{1}'.format(backup_dst, file_name)):
