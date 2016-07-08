@@ -30,7 +30,7 @@ class CreoFileTool:
         self.temp_env = ['TMPDIR', 'TEMP', 'TMP']
         self.extension = ''
         self.patterns = []
-        self.backup_folder = 'Backup'
+        self.backup_folder = '$Backup$'
 
         self.module_name = os.path.basename(sys.argv[0])
 
