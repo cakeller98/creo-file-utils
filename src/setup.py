@@ -9,7 +9,7 @@ includes = ["sip",
             "os",
             "sys"]
             
-datafiles = [("platforms", ["D:\\ProgLib\\Devel\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\platforms\\qwindows.dll"]),
+datafiles = [("platforms", ["C:\\ProgLib\\Devel\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\platforms\\qwindows.dll"]),
              ("", [r"c:\windows\syswow64\MSVCP100.dll",
                    r"c:\windows\syswow64\MSVCR100.dll"])]
             

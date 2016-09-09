@@ -43,6 +43,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         self.rename_to_one = False
         self.remove_ext = False
         self.extension = 'prt.asm.drw.lay.frm'
+        self.delete_extension = 'idx.xpr.xas'
 
         self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.model_dir = os.getcwd()
@@ -99,6 +100,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         creo_file_util.folder = self.model_dir
         creo_file_util.keep_version = self.spin_keep.value()
         creo_file_util.extension = self.extension
+        creo_file_util.delete_extension =  self.delete_extension
         creo_file_util.create_patterns()
 
         information_text = 'Rename finished!!!'
@@ -108,6 +110,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             creo_file_util.purge_files()
+            creo_file_util.delete_extensions()
 
             if creo_file_util.rename_to_one or creo_file_util.remove_number:
                 creo_file_util.rename_files()
@@ -177,6 +180,7 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
         section['Remove_num'] = str(self.rb_remove_version.isChecked())
         section['Keep_num'] = str(self.rb_keep_number.isChecked())
         section['extension'] = self.extension
+        section['delete_extension'] = self.delete_extension
 
         with open(self.script_dir + '\main.ini', "wt") as configfile:
             config.write(configfile)
@@ -214,6 +218,9 @@ class ShowGui(QtWidgets.QDialog, mainGUI.Ui_frm_main):
 
                 if 'extension' in section:
                     self.extension = config.get('General', 'extension')
+
+                if 'delete_extension' in section:
+                    self.delete_extension = config.get('General', 'delete_extension')
 
 
 def main():

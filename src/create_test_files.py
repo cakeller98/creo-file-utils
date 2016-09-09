@@ -4,7 +4,9 @@ import shutil
 
 filesList = ['test_d_a.drw', 'test_d_b.drw', 'test_a_a.asm', 'test_a_b.asm', 'test_p_a.prt', 'test_p_b.prt',
              'test_l_a.lay', 'test_l_b.lay','test_f_a.frm','test_f_b.frm']
+fileList_del = ['test.xpr','text.xas','test.idx']
 folderList = [r'model', r'model\level_1', r'model\level_1\level_2']
+
 
 if os.path.exists(folderList[0]):
     shutil.rmtree(folderList[0])
@@ -17,4 +19,10 @@ for folder in folderList:
 
         for ext in range(1, x):
             with open(r'{0}\{1}.{2}'.format(folder, file, ext), 'w') as f:
+                f.write(r'{0}\{1}.{2}'.format(folder, file, ext))
+
+        for file in fileList_del:
+            x = random.randint(1, 10)
+
+            with open(r'{0}\{1}'.format(folder, file), 'w') as f:
                 f.write(r'{0}\{1}.{2}'.format(folder, file, ext))
