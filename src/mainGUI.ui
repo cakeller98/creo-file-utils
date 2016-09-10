@@ -148,6 +148,9 @@
            </item>
            <item>
             <widget class="QRadioButton" name="rb_keep_number">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Works only when one version is keept.&lt;br/&gt;Will keep the lates version number, all other will be removed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Keep version number</string>
              </property>
@@ -158,6 +161,9 @@
            </item>
            <item>
             <widget class="QRadioButton" name="rb_rename_to_one">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Works only when one version is keept.&lt;br/&gt;This option rename to version 1.&lt;/p&gt;&lt;p&gt;Example:&lt;br/&gt;test.drw.10 -&amp;gt; test.drw.1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Rename to 1</string>
              </property>
@@ -170,6 +176,9 @@
             <widget class="QRadioButton" name="rb_remove_version">
              <property name="enabled">
               <bool>true</bool>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Works only when one version is keept.&lt;br/&gt;This will remove the version number from the files&lt;br/&gt;&lt;br/&gt;Example:&lt;br/&gt;test.drw.10 -&amp;gt; test.drw&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Remove version</string>
