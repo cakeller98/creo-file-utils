@@ -321,42 +321,38 @@ class CreoFileTool:
             old_folder = ''
 
             for file in files:
-                strtmp = file.name.split('.')
                 p = pathlib.WindowsPath(file)
-
-                # parameters = (str(file), str(p.parent), strtmp[0], strtmp[1], strtmp[2])
-                # folder = parameters[1]
-                # delete_file = parameters[0]
 
                 folder=str(p.parent)
                 delete_file=str(file)
 
-                if old_folder != folder:
-                    backup_num_str = self.get_backup_version(r'{0}'.format(folder))
-                    backup_num = '{0:04d}'.format(int(backup_num_str)-1)
-                    old_folder = folder
+                if self.backup_folder not in delete_file:
+                    if old_folder != folder:
+                        backup_num_str = self.get_backup_version(r'{0}'.format(folder))
+                        backup_num = '{0:04d}'.format(int(backup_num_str)-1)
+                        old_folder = folder
 
-                dir_str = os.path.dirname(delete_file)
-                file_name = os.path.basename(delete_file)
+                    dir_str = os.path.dirname(delete_file)
+                    file_name = os.path.basename(delete_file)
 
-                try:
-                    if self.backup:
-                        backup_dst = r'{0}\{1}{2}'.format(dir_str, self.backup_folder, backup_num)
-                        self.print_out.add_to_table('Move', delete_file, backup_dst)
+                    try:
+                        if self.backup:
+                            backup_dst = r'{0}\{1}{2}'.format(dir_str, self.backup_folder, backup_num)
+                            self.print_out.add_to_table('Move', delete_file, backup_dst)
 
-                        if os.path.exists(r'{0}\{1}'.format(backup_dst, file_name)):
-                            os.remove(r'{0}\{1}'.format(backup_dst, file_name))
+                            if os.path.exists(r'{0}\{1}'.format(backup_dst, file_name)):
+                                os.remove(r'{0}\{1}'.format(backup_dst, file_name))
 
-                        shutil.move(delete_file, backup_dst)
-                    else:
-                        self.print_out.add_to_table('Delete', delete_file)
-                        os.remove(delete_file)
-                except (IOError, OSError) as e:
-                    self.error = True
-                    log_util.log_information('ERROR', self.module_name, info_str='Problem to delete file',
-                                             message_str="Error {}".format(e.args[0]))
+                            shutil.move(delete_file, backup_dst)
+                        else:
+                            self.print_out.add_to_table('Delete', delete_file)
+                            os.remove(delete_file)
+                    except (IOError, OSError) as e:
+                        self.error = True
+                        log_util.log_information('ERROR', self.module_name, info_str='Problem to delete file',
+                                                 message_str="Error {}".format(e.args[0]))
 
-                except Exception as e:
-                    self.error = True
-                    log_util.log_information('ERROR', self.module_name, info_str='Problem to delete file',
-                                             message_str="Error {}".format(e.args[0]))
+                    except Exception as e:
+                        self.error = True
+                        log_util.log_information('ERROR', self.module_name, info_str='Problem to delete file',
+                                                 message_str="Error {}".format(e.args[0]))
