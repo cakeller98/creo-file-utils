@@ -39,7 +39,7 @@ class CreoFileTool:
         self.temp_folder = None
 
         self.insertstmt = 'INSERT INTO files VALUES (?,?,?,?,?)'
-        self.selectstmt_01 = 'select folder, name, ext, version from files where folder not like "%backup%" group by folder, name,ext'
+        self.selectstmt_01 = 'select folder, name, ext, version from files where folder not like "%{0}%" group by folder, name,ext'.format(self.backup_folder)
         self.selectstmt_02 = 'select * from files where folder=? and name=? and ext=? and version<=?'
         self.selectstmt_03 = 'select * from files where folder not like "%backup%" order by folder, name, ext, version'
 
