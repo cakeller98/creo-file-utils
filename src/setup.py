@@ -9,13 +9,18 @@ includes = ["sip",
             "os",
             "sys"]
             
-datafiles = [("platforms", ["C:\\ProgLib\\Devel\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\platforms\\qwindows.dll"]),
+datafiles = [("platforms", ["C:\\ProgLib\\Devel\\Python\\Python34\\Lib\\site-packages\\PyQt5\\plugins\\platforms\\qwindows.dll"]),
              ("", [r"c:\windows\syswow64\MSVCP100.dll",
                    r"c:\windows\syswow64\MSVCR100.dll"])]
             
 setup(
     # console=[{"script":"tt.py"}], 
-    windows=[{"script":"purgeFiles.py"}],
+    windows=[
+        {
+            "script":"purgeFiles.py",
+            "icon_resources": [(1, "test_01.ico")]
+        }
+    ],
     scripts=['purgeFiles.py'],
     data_files=datafiles,
     zipfile=None,    
